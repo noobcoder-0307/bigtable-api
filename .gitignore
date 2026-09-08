@@ -1,3 +1,9 @@
 venv/
 __pycache__/
 *.pyc
+# Java / Maven
+java-api/target/
+*.class
+
+# IDE
+.vscode/
