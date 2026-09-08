@@ -98,3 +98,5 @@ cbt -project=test-project -instance=test-instance read my-table
 
 \- New terminal tabs don't inherit `BIGTABLE\_EMULATOR\_HOST` — must re-export it
 
+Maven installed manually to C:\Tools\apache-maven-3.9.16, PATH entry added, the double-nested-zip gotcha (worth remembering — you'll hit weird zip nesting again someday).
+
