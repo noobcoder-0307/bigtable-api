@@ -100,3 +100,27 @@ cbt -project=test-project -instance=test-instance read my-table
 
 Maven installed manually to C:\Tools\apache-maven-3.9.16, PATH entry added, the double-nested-zip gotcha (worth remembering — you'll hit weird zip nesting again someday).
 
+**Status as of this document (end of Day 1, Sept 8 2026):** Day 1 complete.
+
+- JDK confirmed already installed (Java 22.0.1).
+- Maven installed manually (v3.9.16) — required manual zip download since Chocolatey wasn't
+  available on this machine. Hit a double-nested-folder extraction issue (zip extracted into
+  itself one level deep) — resolved by flattening the folder before pointing PATH at it.
+  Same nesting issue recurred when extracting the Spring Initializr project zip — worth
+  remembering as a recurring Windows zip-extraction gotcha, not a one-off.
+- Spring Boot project scaffolded via start.spring.io (Spring Boot 4.1.1, Java 21 target,
+  Maven build, Group: com.ankit, Artifact: bigtable-api). Lives in java-api/ subfolder of
+  the existing bigtable-api repo, per the plan.
+- Initial generation was missing the Spring Web dependency (only bare spring-boot-starter
+  was included) — caught this because the app exited immediately instead of starting an
+  embedded server. Fixed by manually adding spring-boot-starter-web to pom.xml.
+- Confirmed embedded Tomcat server starts correctly on port 8080.
+- Wrote first real endpoint: GET / returns "Hello World", via a separate HelloController
+  class using @RestController + @GetMapping — kept out of the main Application class,
+  per Spring convention of separating bootstrap from route logic.
+- .gitignore updated with Java/Maven entries (target/, *.class) and .vscode/.
+- All work committed in per-milestone commits and pushed; working tree clean.
+
+**Next up — Day 2:** More Java fundamentals (classes, objects vs. static, path/query
+parameters in Spring — @PathVariable / @RequestParam) mapped against the FastAPI
+patterns already known from Days 1–4 of the original Python track.
