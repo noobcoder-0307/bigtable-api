@@ -124,3 +124,18 @@ Maven installed manually to C:\Tools\apache-maven-3.9.16, PATH entry added, the 
 **Next up — Day 2:** More Java fundamentals (classes, objects vs. static, path/query
 parameters in Spring — @PathVariable / @RequestParam) mapped against the FastAPI
 patterns already known from Days 1–4 of the original Python track.
+
+## Mental Model PDF
+
+A visual, beautifully-designed summary PDF is maintained alongside this repo:
+`Bigtable_API_Mental_Model_Day1.pdf` (generated via Claude, HTML+CSS rendered to PDF).
+
+Purpose: a fast-skim, end-of-day visual recap of concepts learned — request-flow
+diagrams, Python→Java translation tables, static-vs-instance style callouts, the
+Git ritual, and a running curriculum progress tracker (Day X of 17).
+
+**Convention going forward:** at the end of each day's session, ask Claude to
+append that day's content as a new section and regenerate the PDF (same file,
+growing over time — not a new file per day). Save each day's version into the
+repo, e.g. under a `mental-model/` folder, so it's version-controlled like
+everything else.
