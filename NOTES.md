@@ -191,3 +191,56 @@ stash, or PR workflow. This is intentional (matches the original plan's "branche
 deferred until there's real feature-isolation value"), not an oversight. Deeper
 Git concepts will be taught reactively — only when a concrete need for them
 actually comes up in the project — rather than as a standalone session.
+
+## Day 4 (Java) — gotchas
+
+- PowerShell splits `-Dexec.mainClass="com.pkg.ClassName"` at the wrong spot when
+  passed to mvnw.cmd, causing Maven to see a garbled/invalid lifecycle phase.
+  Fix: wrap the entire flag (including -D) in one set of quotes instead:
+  "-Dexec.mainClass=com.pkg.ClassName" — not -Dexec.mainClass="...".
+- "Nothing to compile - all classes are up to date" from Maven is a strong signal
+  a new file wasn't actually saved to disk yet, even if it's open and visible in
+  the VS Code editor tab. Always confirm with Test-Path on the exact file path
+  before spending time debugging further - don't assume a visible file = a saved file.
+- Watch the editor tab itself for unsaved-changes indicators (a dot, or "U" next
+  to the filename) - Ctrl+S before running any build command.
+- Bigtable emulator data is in-memory only - restarting the emulator process wipes
+  all tables/rows. Any table/row created via cbt needs recreating after an
+  emulator restart, same as a fresh install.
+- Two deprecation warnings appeared using RowMutation.create(String, String) and
+  BigtableDataClient.readRow(String, String) - functionally fine for now (still
+  compiles/runs), but Google has newer recommended method signatures. Worth
+  revisiting before this becomes production code, not urgent today.
+
+  ## Day 4 (Java) — Bigtable client connected
+
+- Added google-cloud-bigtable dependency via libraries-bom (26.86.0) in pom.xml -
+  BOM import goes in a separate <dependencyManagement> block, actual dependency
+  (no version tag needed) goes in the normal <dependencies> block.
+- Standalone test class (BigtableEmulatorTest.java, plain main() method, no Spring)
+  confirmed the Java client can write and read a row against the local emulator -
+  same "prove it works standalone before wiring into the app" order as the
+  original Python Day 5 plan.
+- First real Bigtable-backed endpoint built: GET /rows/{rowKey}.
+  - BigtableDataClient is created ONCE at startup via a @Configuration + @Bean
+    class (BigtableConfig.java), not per-request - it holds an expensive network
+    connection. @Bean(destroyMethod = "close") tells Spring to clean it up on
+    app shutdown, replacing the manual try-with-resources from the standalone script.
+  - RowController receives the shared BigtableDataClient via constructor
+    (dependency injection) - never manually instantiated.
+  - Deliberately NOT split into controller/service/repository layers yet -
+    RowController currently does all three jobs itself. This is intentional,
+    not an oversight: learning DI + beans + exception handling together with a
+    multi-layer refactor would be too much at once. Refactor into proper layers
+    is planned as a later step once the basic version is proven working.
+- Confirmed hands-on: writing to the same row/column twice does NOT overwrite -
+  Bigtable keeps both cells with different timestamps (newest first). Matches
+  the "timestamped cell versions" theory from Bigtable data model notes, now
+  seen for real. No garbage-collection policy configured yet - cells will
+  accumulate unboundedly until one is set up. Flagged for later schema design.
+- Deprecation warnings on RowMutation.create(String,String) and
+  readRow(String,String) - fixed by using TableId.of("my-table") instead of a
+  raw String. Functionally identical either way, just Google's newer preferred API.
+- Requires the emulator terminal (gcloud beta emulators bigtable start) to stay
+  running in a separate window the entire time the Spring app is running, same
+  as the standalone test - the @Bean tries to connect at app startup.
