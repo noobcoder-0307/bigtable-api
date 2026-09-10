@@ -4,6 +4,7 @@ import com.google.cloud.bigtable.data.v2.BigtableDataClient;
 import com.google.cloud.bigtable.data.v2.BigtableDataSettings;
 import com.google.cloud.bigtable.data.v2.models.Row;
 import com.google.cloud.bigtable.data.v2.models.RowMutation;
+import com.google.cloud.bigtable.data.v2.models.TableId;
 
 import java.io.IOException;
 
@@ -18,12 +19,12 @@ public class BigtableEmulatorTest {
 
         try (BigtableDataClient dataClient = BigtableDataClient.create(settings)) {
 
-            RowMutation mutation = RowMutation.create("my-table", "row1")
+            RowMutation mutation = RowMutation.create(TableId.of("my-table"), "row1")
                     .setCell("cf1", "name", "Ankit");
             dataClient.mutateRow(mutation);
             System.out.println("Row written.");
 
-            Row row = dataClient.readRow("my-table", "row1");
+            Row row = dataClient.readRow(TableId.of("my-table"), "row1");
             System.out.println("Row read back: " + row);
         }
     }
