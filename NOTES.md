@@ -244,3 +244,15 @@ actually comes up in the project — rather than as a standalone session.
 - Requires the emulator terminal (gcloud beta emulators bigtable start) to stay
   running in a separate window the entire time the Spring app is running, same
   as the standalone test - the @Bean tries to connect at app startup.
+## Mac setup (MacBook Air M5, Apple Silicon, zsh)
+
+- Repo lives at `~/projects/bigtable-api` (outside iCloud-synced folders). Git: `core.autocrlf input`, default branch `main`, GitHub login via `gh auth login` (HTTPS).
+- Homebrew is in `/opt/homebrew`; add it to PATH in `~/.zprofile` with `eval "$(/opt/homebrew/bin/brew shellenv)"`.
+- JDK 21: `brew install --cask temurin@21`. Set `export JAVA_HOME=$(/usr/libexec/java_home -v 21)` in `~/.zprofile`.
+- Gotcha: Homebrew Maven ships its own OpenJDK 27 and uses it if `JAVA_HOME` is unset. Check `mvn -version` says Java 21.
+- Build and run: `cd java-api && mvn spring-boot:run` (used `mvn`, not `./mvnw`).
+- Google Cloud SDK: `brew install --cask gcloud-cli`. Add `/opt/homebrew/share/google-cloud-sdk/bin` to PATH, then `gcloud components install beta bigtable cbt`. Do not run `gcloud auth login` (emulator needs no login; personal laptop).
+- Emulator: `gcloud beta emulators bigtable start` (keep tab open, in-memory data). In each new tab: `export BIGTABLE_EMULATOR_HOST=127.0.0.1:8086`. Recreate the table and row after every emulator restart (same `cbt` commands as above).
+- Docker Desktop: `brew install --cask docker-desktop`. Gotcha: first launch showed "Rosetta installation failed" and the engine never started. Fix: `softwareupdate --install-rosetta --agree-to-license`, then `pkill -f /Applications/Docker.app`, then `open -a Docker`. Verified with `docker run hello-world`.
+- Python for the mental-model PDF: venv at `~/venvs/docs` (outside repo); activate with `source ~/venvs/docs/bin/activate`, then `pip install playwright` and `playwright install chromium`.
+- Verified on Mac: emulator + `mvn spring-boot:run` + `curl http://localhost:8080/rows/row1` returns `{"name":"Ankit"}`.
